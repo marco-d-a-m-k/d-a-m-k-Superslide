@@ -28,14 +28,14 @@
 ```php
 <div class="slider">
 
-    <menu class="slider__control">
-        <button class="slider--prev">
+    <nav class="slider__control" aria-label="Slider navigation">
+        <button class="slider--prev" aria-label="Previous slide">
             <?php include THEME_DIR . 'parts/vectors/left.svg'; ?>
         </button>
-        <button class="slider--next">
+        <button class="slider--next" aria-label="Next slide">
             <?php include THEME_DIR . 'parts/vectors/right.svg'; ?>
         </button>
-    </menu>
+    </nav>
 
     <ul class="slider__list">
         <?php foreach ($block['slider'] as $index => $item): ?>
@@ -45,7 +45,7 @@
         <?php endforeach; ?>
     </ul>
 
-    <nav class="slider__pagination"></nav>
+    <nav class="slider__pagination" aria-label="Slider pagination"></nav>
 
 </div>
 ```
