@@ -1,0 +1,71 @@
+.slider {
+    position: relative;
+    overflow: hidden;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+.slider__viewport {
+    overflow: hidden;
+    width: 100%;
+}
+
+.slider__list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px; /* important for "flexGap" usage in js  */
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth; /* not all browsers support it though */
+    user-select: none; /* no text selection on drag */
+    -webkit-overflow-scrolling: touch;
+}
+
+.slider__item {
+    flex: 0 0 auto;
+    width: calc(100% - 20px);
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.slider--prev,
+.slider--next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.slider--prev {
+    left: 10px;
+}
+
+.slider--next {
+    right: 10px;
+}
+
+.slider__pagination {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.slider__dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 0 3px;
+    border-radius: 50%;
+    background-color: #ccc;
+    border: none;
+    cursor: pointer;
+}
+
+.slider__dot.active {
+    background-color: #333;
+}
+
+.slide--active {
+    outline: 2px solid #ff0000;
+}

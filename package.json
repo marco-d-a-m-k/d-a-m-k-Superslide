@@ -1,0 +1,17 @@
+{
+  "name": "d-a-m-k-superslide",
+  "version": "1.0.0",
+  "description": "A slider/carousel library built with Hammer.js and vanilla JavaScript",
+  "main": "index.js",
+  "keywords": [
+    "slider",
+    "carousel",
+    "hammerjs",
+    "javascript"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "hammerjs": "^2.0.8"
+  }
+}
