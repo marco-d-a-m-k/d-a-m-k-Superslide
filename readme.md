@@ -50,6 +50,25 @@
 </div>
 ```
 
+## JS Setup
+
+```javascript
+import { Slider } from "d-a-m-k-superslide";
+
+const sliderElement = document.querySelector(".slider");
+const mySlider = new Slider(sliderElement, {
+    isLoop: true,
+    freeMode: false,
+    swipeThreshold: 50,
+    slideSpeed: 300,
+    autoActive: true,
+    changeWidth: {
+        enabled: true,
+        widthTransitionDuration: 500,
+    },
+});
+```
+
 ## CSS Setup
 
 ```css
@@ -134,24 +153,4 @@
 .slider__dot.active {
     background-color: var(--clr-green);
 }
-```
-
-## JS Setup
-
-```javascript
-import Slider from "./d-a-m-k-superslide.js";
-
-// Instantiate all sliders once the DOM is loaded
-const sliderElement = document.querySelector(".slider");
-const mySlider = new Slider(sliderElement, {
-    isLoop: true,
-    freeMode: false,
-    swipeThreshold: 50,
-    slideSpeed: 300,
-    autoActive: true,
-    changeWidth: {
-        enabled: true,
-        widthTransitionDuration: 500,
-    },
-});
 ```
