@@ -1,71 +1,81 @@
 .slider {
-    position: relative;
-    overflow: hidden;
-    background: #f9f9f9;
-    border-radius: 4px;
-}
-
-.slider__viewport {
-    overflow: hidden;
-    width: 100%;
+    display: grid;
+    gap: var(--sp-6);
 }
 
 .slider__list {
+    position: relative;
     display: flex;
-    flex-wrap: nowrap;
-    gap: 10px; /* important for "flexGap" usage in js  */
-    margin: 0;
-    padding: 0;
-    scroll-behavior: smooth; /* not all browsers support it though */
-    user-select: none; /* no text selection on drag */
-    -webkit-overflow-scrolling: touch;
+    flex-flow: row nowrap;
+    gap: var(--sp-2);
+
+    overflow-x: scroll;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    cursor: grab;
+
+    &:active {
+        cursor: grabbing;
+    }
+
+    & .slider__litem {
+        min-width: 0;
+        flex: none;
+
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-6);
+
+        & img {
+            pointer-events: none;
+        }
+    }
 }
 
-.slider__item {
-    flex: 0 0 auto;
-    width: calc(100% - 20px);
-    box-sizing: border-box;
-    text-align: center;
+/* Navigation Styling */
+
+.slider__control {
+    & > * {
+        width: var(--fs-2);
+        aspect-ratio: 1/1;
+    }
 }
 
-.slider--prev,
-.slider--next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.slider--prev {
-    left: 10px;
-}
-
-.slider--next {
-    right: 10px;
-}
-
+/* Pagination Styling */
 .slider__pagination {
-    position: absolute;
-    bottom: 10px;
-    left: 0;
-    right: 0;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: var(--sp-4);
+}
+
+.slider__pagination ul {
+    display: flex;
+    list-style: none;
+    gap: var(--sp-4);
 }
 
 .slider__dot {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    margin: 0 3px;
+    width: var(--fs-2);
+    aspect-ratio: 1/1;
     border-radius: 50%;
-    background-color: #ccc;
-    border: none;
+    background-color: var(--clr-black);
     cursor: pointer;
+    transition: background-color var(--ts-2);
+
+    @media (hover) {
+        &:is(:hover, :focus-visible) {
+            background-color: var(--clr-dark-grey);
+        }
+
+        &:active {
+            color: var(--clr-white);
+        }
+    }
 }
 
 .slider__dot.active {
-    background-color: #333;
-}
-
-.slide--active {
-    outline: 2px solid #ff0000;
+    background-color: var(--clr-green);
 }
