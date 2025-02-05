@@ -10,6 +10,7 @@
     gap: var(--sp-2);
 
     overflow-x: scroll;
+    overflow-y: hidden;
 
     &::-webkit-scrollbar {
         display: none;

@@ -9,6 +9,7 @@ class Slider {
             swipeThreshold: 50,
             slideSpeed: 300,
             autoActive: false,
+            clickToSlide: true,
             changeWidth: {
                 enabled: false,
                 widthTransitionDuration: 300,
@@ -46,7 +47,22 @@ class Slider {
         }
         this.setupSwipe();
         this.setupKeyboardNavigation();
-        this.setupSlideClick();
+        if (this.config.clickToSlide) {
+            this.setupSlideClick();
+        }
+    }
+
+    setupSlideClick() {
+        if (!this.config.clickToSlide) return;
+
+        this.slides.forEach((slide, index) => {
+            const slideHammer = new Hammer(slide);
+            slideHammer.on("tap", () => {
+                if (!this.isDragging) {
+                    this.moveToSlide(index);
+                }
+            });
+        });
     }
 
     setupAccessibility() {

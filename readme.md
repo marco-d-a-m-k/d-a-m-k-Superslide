@@ -23,6 +23,9 @@
 -   **`changeWidth.widthTransitionDuration`** \*(Number, default: `300`)  
     Duration (ms) of the width transition when `enabled`.
 
+-   **`clickToSlide`** \*(Boolean, default: `false`)  
+    Moves to Slide when its clicked on when `enabled`.
+
 ## PHP Setup
 
 ```php
