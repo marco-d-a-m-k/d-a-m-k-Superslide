@@ -23,9 +23,13 @@ class Slider {
         this.paginationContainer = sliderElement.querySelector(
             ".slider__pagination"
         );
-        // Keep all slides, regardless of their display status.
+
+        // Store all slides, but we will determine which ones are visible dynamically.
         this.slides = Array.from(this.sliderList.children);
-        this.currentIndex = 0;
+
+        // Find first visible slide at initialization
+        this.currentIndex = this.findFirstVisibleSlide();
+
         this.animationId = null;
         this.isDragging = false;
 
@@ -53,36 +57,33 @@ class Slider {
         }
     }
 
-    // Helper to check if a slide is visible in the DOM.
-    // A slide with display:none is skipped unless it has the "force-visible" class.
-    isSlideVisible(slide) {
-        const computedStyle = window.getComputedStyle(slide);
-        if (
-            computedStyle.display === "none" &&
-            !slide.classList.contains("force-visible")
-        ) {
-            return false;
-        }
-        return true;
+    /**
+     * Finds the first visible slide in the DOM.
+     * Returns the index of the first visible slide or 0 if none are found.
+     */
+    findFirstVisibleSlide() {
+        const firstVisibleIndex = this.slides.findIndex((slide) =>
+            this.isSlideVisible(slide)
+        );
+        return firstVisibleIndex !== -1 ? firstVisibleIndex : 0; // Fallback to 0 if all slides are hidden
     }
 
-    setupSlideClick() {
-        if (!this.config.clickToSlide) return;
-
-        this.slides.forEach((slide, index) => {
-            const slideHammer = new Hammer(slide);
-            slideHammer.on("tap", () => {
-                if (!this.isDragging && this.isSlideVisible(slide)) {
-                    this.moveToSlide(index);
-                }
-            });
-        });
+    /**
+     * Checks if a slide is visible (not display: none) unless it has "force-visible" class.
+     */
+    isSlideVisible(slide) {
+        const computedStyle = window.getComputedStyle(slide);
+        return (
+            computedStyle.display !== "none" ||
+            slide.classList.contains("force-visible")
+        );
     }
 
     setupAccessibility() {
         this.sliderList.setAttribute("aria-live", "polite");
         this.sliderList.setAttribute("role", "region");
         this.sliderList.setAttribute("aria-roledescription", "carousel");
+
         this.slides.forEach((slide, index) => {
             slide.setAttribute("role", "group");
             slide.setAttribute("aria-roledescription", "slide");
@@ -107,18 +108,14 @@ class Slider {
 
     moveToSlide(index) {
         const slide = this.slides[index];
-        // If the target slide is not visible, find the next visible slide.
         if (!slide || !this.isSlideVisible(slide)) {
-            const nextVisibleIndex = this.slides.findIndex((s) =>
-                this.isSlideVisible(s)
-            );
-            if (nextVisibleIndex === -1) return; // no visible slide exists
+            const nextVisibleIndex = this.findFirstVisibleSlide();
+            if (nextVisibleIndex === -1) return;
             index = nextVisibleIndex;
         }
 
         this.cancelMomentumAnimation();
 
-        // Update active class for all slides.
         this.slides.forEach((s, i) => {
             s.classList.toggle("slide--active", i === index);
         });
@@ -138,7 +135,6 @@ class Slider {
         let activeIndex = this.currentIndex;
 
         this.slides.forEach((slide, index) => {
-            // Only consider visible slides.
             if (!this.isSlideVisible(slide)) return;
             const slideRect = slide.getBoundingClientRect();
             const overlap =
@@ -162,8 +158,8 @@ class Slider {
         } else {
             for (let i = 0; i < this.slides.length; i++) {
                 if (
-                    this.sliderList.scrollLeft <
-                    this.slides[i].offsetLeft + 1
+                    this.isSlideVisible(this.slides[i]) &&
+                    this.sliderList.scrollLeft < this.slides[i].offsetLeft + 1
                 ) {
                     newIndex = i;
                     break;
@@ -180,59 +176,16 @@ class Slider {
         }
     }
 
-    smoothScrollTo(targetScrollLeft, duration) {
-        const start = this.sliderList.scrollLeft;
-        const startTime = performance.now();
+    setupSlideClick() {
+        if (!this.config.clickToSlide) return;
 
-        const animate = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            // Ease In-Out calculation
-            const ease =
-                progress < 0.5
-                    ? 2 * progress * progress
-                    : -1 + (4 - 2 * progress) * progress;
-
-            this.sliderList.scrollLeft =
-                start + (targetScrollLeft - start) * ease;
-
-            if (progress < 1) {
-                this.animationId = requestAnimationFrame(animate);
-            } else {
-                this.animationId = null;
-                if (this.config.freeMode) {
-                    this.updateActiveSlide();
+        this.slides.forEach((slide, index) => {
+            const slideHammer = new Hammer(slide);
+            slideHammer.on("tap", () => {
+                if (!this.isDragging && this.isSlideVisible(slide)) {
+                    this.moveToSlide(index);
                 }
-            }
-        };
-        this.animationId = requestAnimationFrame(animate);
-    }
-
-    setupNavigation() {
-        this.prevButton.setAttribute("aria-label", "Previous slide");
-        this.nextButton.setAttribute("aria-label", "Next slide");
-
-        this.prevButton.addEventListener("click", () => {
-            let newIndex = this.currentIndex - 1;
-            if (this.config.isLoop && this.currentIndex === 0) {
-                newIndex = this.slides.length - 1;
-            } else {
-                newIndex = Math.max(0, newIndex);
-            }
-            this.moveToSlide(newIndex);
-        });
-
-        this.nextButton.addEventListener("click", () => {
-            let newIndex = this.currentIndex + 1;
-            if (
-                this.config.isLoop &&
-                this.currentIndex === this.slides.length - 1
-            ) {
-                newIndex = 0;
-            } else {
-                newIndex = Math.min(this.slides.length - 1, newIndex);
-            }
-            this.moveToSlide(newIndex);
+            });
         });
     }
 
@@ -244,6 +197,8 @@ class Slider {
         this.paginationDots = [];
 
         this.slides.forEach((_, index) => {
+            if (!this.isSlideVisible(this.slides[index])) return; // Skip hidden slides
+
             const li = document.createElement("li");
             const dot = document.createElement("button");
             dot.classList.add("slider__dot");
@@ -251,6 +206,7 @@ class Slider {
             dot.setAttribute("aria-label", `Go to slide ${index + 1}`);
             dot.setAttribute("role", "tab");
             dot.setAttribute("aria-controls", this.sliderList.id || "");
+
             if (index === this.currentIndex) {
                 dot.classList.add("active");
                 dot.setAttribute("aria-selected", "true");
@@ -284,107 +240,6 @@ class Slider {
                 index === this.currentIndex ? "true" : "false"
             );
         });
-    }
-
-    setupSwipe() {
-        this.sliderList.style.touchAction = "none";
-        this.hammer = new Hammer(this.sliderList);
-        this.hammer.get("pan").set({ direction: Hammer.DIRECTION_HORIZONTAL });
-        this.currentX = 0;
-        this.lastX = 0;
-        this.velocity = 0;
-
-        const updateVelocity = (x) => {
-            this.velocity = x - this.lastX;
-            this.lastX = x;
-        };
-
-        const animateMomentum = () => {
-            this.sliderList.scrollLeft -= this.velocity;
-            this.velocity *= 0.95;
-            if (Math.abs(this.velocity) > 0.5) {
-                this.animationId = requestAnimationFrame(animateMomentum);
-            } else {
-                this.cancelMomentumAnimation();
-                if (this.config.freeMode) {
-                    this.updateActiveSlide();
-                }
-            }
-        };
-
-        const startMomentumAnimation = () => {
-            if (Math.abs(this.velocity) < 0.5) return;
-            this.cancelMomentumAnimation();
-            this.animationId = requestAnimationFrame(animateMomentum);
-        };
-
-        this.hammer.on("panstart", (ev) => {
-            this.isDragging = true;
-            this.currentX = this.sliderList.scrollLeft;
-            this.lastX = ev.center.x;
-            this.cancelMomentumAnimation();
-        });
-
-        this.hammer.on("panmove", (ev) => {
-            if (this.config.freeMode) {
-                this.sliderList.scrollLeft = this.currentX - ev.deltaX;
-            }
-            updateVelocity(ev.center.x);
-        });
-
-        this.hammer.on("panend", (ev) => {
-            setTimeout(() => {
-                this.isDragging = false;
-            }, 50);
-
-            if (!this.config.freeMode) {
-                this.handleStickySwipe(ev);
-            } else {
-                startMomentumAnimation();
-            }
-        });
-    }
-
-    setupKeyboardNavigation() {
-        this.sliderList.setAttribute("tabindex", "0");
-        this.sliderList.addEventListener("keydown", (event) => {
-            this.cancelMomentumAnimation();
-            let newIndex = this.currentIndex;
-            if (event.key === "ArrowRight") {
-                newIndex = Math.min(this.slides.length - 1, newIndex + 1);
-            } else if (event.key === "ArrowLeft") {
-                newIndex = Math.max(0, newIndex - 1);
-            } else {
-                return;
-            }
-            this.moveToSlide(newIndex);
-        });
-    }
-
-    cancelMomentumAnimation() {
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-            this.animationId = null;
-        }
-    }
-
-    handleStickySwipe(ev) {
-        const maxIndex = this.slides.length - 1;
-        const threshold = this.config.swipeThreshold;
-        let newIndex = this.currentIndex;
-
-        if (ev.deltaX > threshold) {
-            newIndex =
-                this.config.isLoop && newIndex === 0
-                    ? maxIndex
-                    : Math.max(0, newIndex - 1);
-        } else if (ev.deltaX < -threshold) {
-            newIndex =
-                this.config.isLoop && newIndex === maxIndex
-                    ? 0
-                    : Math.min(maxIndex, newIndex + 1);
-        }
-        this.moveToSlide(newIndex);
     }
 
     destroy() {
