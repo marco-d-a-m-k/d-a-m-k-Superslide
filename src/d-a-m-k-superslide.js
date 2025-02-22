@@ -23,6 +23,7 @@ class Slider {
         this.paginationContainer = sliderElement.querySelector(
             ".slider__pagination"
         );
+        // Keep all slides, regardless of their display status.
         this.slides = Array.from(this.sliderList.children);
         this.currentIndex = 0;
         this.animationId = null;
@@ -52,13 +53,26 @@ class Slider {
         }
     }
 
+    // Helper to check if a slide is visible in the DOM.
+    // A slide with display:none is skipped unless it has the "force-visible" class.
+    isSlideVisible(slide) {
+        const computedStyle = window.getComputedStyle(slide);
+        if (
+            computedStyle.display === "none" &&
+            !slide.classList.contains("force-visible")
+        ) {
+            return false;
+        }
+        return true;
+    }
+
     setupSlideClick() {
         if (!this.config.clickToSlide) return;
 
         this.slides.forEach((slide, index) => {
             const slideHammer = new Hammer(slide);
             slideHammer.on("tap", () => {
-                if (!this.isDragging) {
+                if (!this.isDragging && this.isSlideVisible(slide)) {
                     this.moveToSlide(index);
                 }
             });
@@ -93,15 +107,27 @@ class Slider {
 
     moveToSlide(index) {
         const slide = this.slides[index];
-        if (!slide) return;
+        // If the target slide is not visible, find the next visible slide.
+        if (!slide || !this.isSlideVisible(slide)) {
+            const nextVisibleIndex = this.slides.findIndex((s) =>
+                this.isSlideVisible(s)
+            );
+            if (nextVisibleIndex === -1) return; // no visible slide exists
+            index = nextVisibleIndex;
+        }
+
         this.cancelMomentumAnimation();
 
+        // Update active class for all slides.
         this.slides.forEach((s, i) => {
             s.classList.toggle("slide--active", i === index);
         });
 
         this.currentIndex = index;
-        const targetScrollLeft = this.getTargetScrollLeft(slide, index);
+        const targetScrollLeft = this.getTargetScrollLeft(
+            this.slides[index],
+            index
+        );
         this.smoothScrollTo(targetScrollLeft, this.config.slideSpeed);
         this.updatePagination();
     }
@@ -112,6 +138,8 @@ class Slider {
         let activeIndex = this.currentIndex;
 
         this.slides.forEach((slide, index) => {
+            // Only consider visible slides.
+            if (!this.isSlideVisible(slide)) return;
             const slideRect = slide.getBoundingClientRect();
             const overlap =
                 Math.min(containerRect.right, slideRect.right) -
@@ -159,7 +187,7 @@ class Slider {
         const animate = (currentTime) => {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            // Ease In-Out
+            // Ease In-Out calculation
             const ease =
                 progress < 0.5
                     ? 2 * progress * progress
@@ -330,17 +358,6 @@ class Slider {
                 return;
             }
             this.moveToSlide(newIndex);
-        });
-    }
-
-    setupSlideClick() {
-        this.slides.forEach((slide, index) => {
-            const slideHammer = new Hammer(slide);
-            slideHammer.on("tap", () => {
-                if (!this.isDragging) {
-                    this.moveToSlide(index);
-                }
-            });
         });
     }
 
