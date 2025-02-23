@@ -262,9 +262,41 @@ class Slider {
     }
 
     setupSwipe() {
-        this.sliderList.style.touchAction = "none";
+        this.sliderList.style.touchAction = "pan-y";
         this.hammer = new Hammer(this.sliderList);
         this.hammer.get("pan").set({ direction: Hammer.DIRECTION_HORIZONTAL });
+
+        let isHorizontalSwipe = null;
+
+        this.sliderList.addEventListener(
+            "touchstart",
+            (e) => {
+                const touch = e.touches[0];
+                this.startX = touch.clientX;
+                this.startY = touch.clientY;
+                isHorizontalSwipe = null;
+            },
+            { passive: true }
+        );
+
+        this.sliderList.addEventListener(
+            "touchmove",
+            (e) => {
+                if (isHorizontalSwipe === null) {
+                    // Detect only once per swipe
+                    const touch = e.touches[0];
+                    const deltaX = Math.abs(touch.clientX - this.startX);
+                    const deltaY = Math.abs(touch.clientY - this.startY);
+                    isHorizontalSwipe = deltaX > deltaY;
+                }
+
+                if (isHorizontalSwipe) {
+                    e.preventDefault();
+                }
+            },
+            { passive: false }
+        );
+
         this.currentX = 0;
         this.lastX = 0;
         this.velocity = 0;
