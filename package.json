@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "A slider/carousel library built with Hammer.js and vanilla JavaScript",
     "main": "index.js",
+    "style": "src/d-a-m-k-superslide.css",
     "keywords": [
         "slider",
         "carousel",

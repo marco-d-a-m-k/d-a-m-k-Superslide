@@ -2,7 +2,7 @@
 
 ## Usage
 
--   **`isLoop`** \*(Boolean, default: `false`)  
+-   **`isaLoop`** \*(Boolean, default: `false`)  
     Loops back to first or last slide in sticky mode.
 
 -   **`freeMode`** \*(Boolean, default: `false`)  
