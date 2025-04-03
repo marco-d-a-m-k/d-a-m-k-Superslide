@@ -34,7 +34,7 @@
 ## PHP Setup
 
 ```php
-<div class="slider">
+<div class="slider" aria-labelledby="XXXXX">
 
     <nav class="slider__control" aria-label="Slider navigation">
         <button class="slider--prev" aria-label="Previous slide">

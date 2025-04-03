@@ -17,6 +17,7 @@ class Slider {
             lang: "auto",
             ...config,
         };
+
         let lang = this.config.lang;
         if (!lang || lang === "auto") {
             lang = (document.documentElement.lang || "en").toLowerCase();
@@ -27,6 +28,11 @@ class Slider {
 
         this.sliderList = sliderElement.querySelector(".slider__list");
         if (!this.sliderList) return;
+        if (!this.sliderList.id) {
+            this.sliderList.id = `slider-list-${Math.floor(
+                Math.random() * 10000
+            )}`;
+        }
         this.prevButton = sliderElement.querySelector(".slider--prev");
         this.nextButton = sliderElement.querySelector(".slider--next");
         this.paginationContainer = sliderElement.querySelector(
@@ -46,6 +52,7 @@ class Slider {
 
         const sliderListStyles = window.getComputedStyle(this.sliderList);
         this.flexGap = parseInt(sliderListStyles.gap, 10) || 0;
+
         this.init();
     }
 
@@ -62,15 +69,20 @@ class Slider {
         if (this.config.clickToSlide) {
             this.setupSlideClick();
         }
+
+        // Add ARIA live region for announcements
+        const liveRegion = document.createElement("div");
+        liveRegion.className = "sr-only";
+        liveRegion.id = "sr-slide-status";
+        liveRegion.setAttribute("aria-live", "polite");
+        this.sliderElement.appendChild(liveRegion);
     }
 
     setupAccessibility() {
-        const carouselDesc = this.isGerman ? "Karussell" : "carousel";
-        const slideDesc = this.isGerman ? "Folie" : "slide";
+        const label = this.isGerman ? "Bildkarussell" : "Image carousel";
 
-        this.sliderList.setAttribute("aria-live", "polite");
         this.sliderList.setAttribute("role", "region");
-        this.sliderList.setAttribute("aria-roledescription", carouselDesc);
+        this.sliderList.setAttribute("aria-label", label);
         this.sliderList.setAttribute("tabindex", "0");
 
         this.slides.forEach((slide, index) => {
@@ -80,17 +92,14 @@ class Slider {
                 : `Slide ${index + 1} of ${this.slides.length}`;
 
             slide.setAttribute("role", "group");
-            slide.setAttribute("aria-roledescription", slideDesc);
             slide.setAttribute("aria-label", label);
+            slide.setAttribute("aria-current", isActive ? "true" : "false");
             slide.classList.toggle("slide--active", isActive);
-            slide.setAttribute("aria-hidden", !isActive);
             slide.setAttribute("tabindex", isActive ? "0" : "-1");
         });
     }
 
     setupSlideClick() {
-        if (!this.config.clickToSlide) return;
-
         this.slides.forEach((slide, index) => {
             const slideHammer = new Hammer(slide);
             slideHammer.on("tap", () => {
@@ -118,7 +127,7 @@ class Slider {
         this.slides.forEach((s, i) => {
             const isActive = i === index;
             s.classList.toggle("slide--active", isActive);
-            s.setAttribute("aria-hidden", !isActive);
+            s.setAttribute("aria-current", isActive ? "true" : "false");
             s.setAttribute("tabindex", isActive ? "0" : "-1");
         });
 
@@ -129,6 +138,15 @@ class Slider {
 
         // Move focus to the active slide
         this.slides[this.currentIndex].focus();
+
+        // Update screen reader announcement
+        const status = this.sliderElement.querySelector("#sr-slide-status");
+        if (status) {
+            const label = this.isGerman
+                ? `Folie ${index + 1} von ${this.slides.length}`
+                : `Slide ${index + 1} of ${this.slides.length}`;
+            status.textContent = label;
+        }
     }
 
     determineActiveSlideNonSticky() {
@@ -152,6 +170,7 @@ class Slider {
 
     updateActiveSlide() {
         if (!this.config.autoActive) return;
+
         let newIndex = this.currentIndex;
 
         if (this.config.freeMode) {
@@ -169,11 +188,7 @@ class Slider {
         }
 
         if (newIndex !== this.currentIndex) {
-            this.currentIndex = newIndex;
-            this.slides.forEach((s, i) => {
-                s.classList.toggle("slide--active", i === newIndex);
-            });
-            this.updatePagination();
+            this.moveToSlide(newIndex);
         }
     }
 
@@ -184,7 +199,6 @@ class Slider {
         const animate = (currentTime) => {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            // Ease In-Out
             const ease =
                 progress < 0.5
                     ? 2 * progress * progress
@@ -202,6 +216,7 @@ class Slider {
                 }
             }
         };
+
         this.animationId = requestAnimationFrame(animate);
     }
 
@@ -252,7 +267,7 @@ class Slider {
             dot.dataset.index = index;
             dot.setAttribute("aria-label", `${dotLabelPrefix} ${index + 1}`);
             dot.setAttribute("role", "tab");
-            dot.setAttribute("aria-controls", this.sliderList.id || "");
+            dot.setAttribute("aria-controls", this.sliderList.id);
             dot.setAttribute(
                 "aria-selected",
                 index === this.currentIndex ? "true" : "false"
@@ -313,7 +328,6 @@ class Slider {
             "touchmove",
             (e) => {
                 if (isHorizontalSwipe === null) {
-                    // Detect only once per swipe
                     const touch = e.touches[0];
                     const deltaX = Math.abs(touch.clientX - this.startX);
                     const deltaY = Math.abs(touch.clientY - this.startY);
@@ -395,17 +409,6 @@ class Slider {
                 return;
             }
             this.moveToSlide(newIndex);
-        });
-    }
-
-    setupSlideClick() {
-        this.slides.forEach((slide, index) => {
-            const slideHammer = new Hammer(slide);
-            slideHammer.on("tap", () => {
-                if (!this.isDragging) {
-                    this.moveToSlide(index);
-                }
-            });
         });
     }
 
