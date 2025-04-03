@@ -72,7 +72,7 @@ class Slider {
 
         // Add ARIA live region for announcements
         const liveRegion = document.createElement("div");
-        liveRegion.className = "sr-only";
+        liveRegion.setAttribute("visually-hidden", "");
         liveRegion.id = "sr-slide-status";
         liveRegion.setAttribute("aria-live", "polite");
         this.sliderElement.appendChild(liveRegion);
