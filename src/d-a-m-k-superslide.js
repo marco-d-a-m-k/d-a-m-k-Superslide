@@ -14,8 +14,11 @@ class Slider {
                 enabled: false,
                 widthTransitionDuration: 300,
             },
+            lang: null,
             ...config,
         };
+        this.lang = this.config.lang || navigator.language || "en";
+        this.isGerman = this.lang.startsWith("de");
         this.sliderList = sliderElement.querySelector(".slider__list");
         if (!this.sliderList) return;
         this.prevButton = sliderElement.querySelector(".slider--prev");
@@ -56,18 +59,17 @@ class Slider {
     }
 
     setupAccessibility() {
-        const isGerman = navigator.language.startsWith("de");
-        const carouselDesc = isGerman ? "Karussell" : "carousel";
-        const slideDesc = isGerman ? "Folie" : "slide";
+        const carouselDesc = this.isGerman ? "Karussell" : "carousel";
+        const slideDesc = this.isGerman ? "Folie" : "slide";
 
         this.sliderList.setAttribute("aria-live", "polite");
         this.sliderList.setAttribute("role", "region");
         this.sliderList.setAttribute("aria-roledescription", carouselDesc);
-        this.sliderList.setAttribute("tabindex", "0"); // focusable container
+        this.sliderList.setAttribute("tabindex", "0");
 
         this.slides.forEach((slide, index) => {
             const isActive = index === this.currentIndex;
-            const label = isGerman
+            const label = this.isGerman
                 ? `Folie ${index + 1} von ${this.slides.length}`
                 : `Slide ${index + 1} of ${this.slides.length}`;
 
@@ -90,24 +92,6 @@ class Slider {
                     this.moveToSlide(index);
                 }
             });
-        });
-    }
-
-    setupAccessibility() {
-        this.sliderList.setAttribute("aria-live", "polite");
-        this.sliderList.setAttribute("role", "region");
-        this.sliderList.setAttribute("aria-roledescription", "carousel");
-        this.slides.forEach((slide, index) => {
-            slide.setAttribute("role", "group");
-            slide.setAttribute("aria-roledescription", "slide");
-            slide.setAttribute(
-                "aria-label",
-                `Slide ${index + 1} of ${this.slides.length}`
-            );
-            slide.classList.toggle(
-                "slide--active",
-                index === this.currentIndex
-            );
         });
     }
 
@@ -137,6 +121,7 @@ class Slider {
         this.smoothScrollTo(targetScrollLeft, this.config.slideSpeed);
         this.updatePagination();
 
+        // Move focus to the active slide
         this.slides[this.currentIndex].focus();
     }
 
@@ -215,9 +200,8 @@ class Slider {
     }
 
     setupNavigation() {
-        const isGerman = navigator.language.startsWith("de");
-        const prevLabel = isGerman ? "Vorherige Folie" : "Previous slide";
-        const nextLabel = isGerman ? "Nächste Folie" : "Next slide";
+        const prevLabel = this.isGerman ? "Vorherige Folie" : "Previous slide";
+        const nextLabel = this.isGerman ? "Nächste Folie" : "Next slide";
 
         this.prevButton.setAttribute("aria-label", prevLabel);
         this.nextButton.setAttribute("aria-label", nextLabel);
@@ -247,8 +231,7 @@ class Slider {
     }
 
     setupPagination() {
-        const isGerman = navigator.language.startsWith("de");
-        const dotLabelPrefix = isGerman ? "Zur Folie" : "Go to slide";
+        const dotLabelPrefix = this.isGerman ? "Zur Folie" : "Go to slide";
 
         this.paginationList = document.createElement("ul");
         this.paginationList.setAttribute("role", "tablist");
@@ -268,6 +251,7 @@ class Slider {
                 "aria-selected",
                 index === this.currentIndex ? "true" : "false"
             );
+
             if (index === this.currentIndex) {
                 dot.classList.add("active");
             }
