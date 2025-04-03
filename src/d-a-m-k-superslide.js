@@ -55,6 +55,31 @@ class Slider {
         }
     }
 
+    setupAccessibility() {
+        const isGerman = navigator.language.startsWith("de");
+        const carouselDesc = isGerman ? "Karussell" : "carousel";
+        const slideDesc = isGerman ? "Folie" : "slide";
+
+        this.sliderList.setAttribute("aria-live", "polite");
+        this.sliderList.setAttribute("role", "region");
+        this.sliderList.setAttribute("aria-roledescription", carouselDesc);
+        this.sliderList.setAttribute("tabindex", "0"); // focusable container
+
+        this.slides.forEach((slide, index) => {
+            const isActive = index === this.currentIndex;
+            const label = isGerman
+                ? `Folie ${index + 1} von ${this.slides.length}`
+                : `Slide ${index + 1} of ${this.slides.length}`;
+
+            slide.setAttribute("role", "group");
+            slide.setAttribute("aria-roledescription", slideDesc);
+            slide.setAttribute("aria-label", label);
+            slide.classList.toggle("slide--active", isActive);
+            slide.setAttribute("aria-hidden", !isActive);
+            slide.setAttribute("tabindex", isActive ? "0" : "-1");
+        });
+    }
+
     setupSlideClick() {
         if (!this.config.clickToSlide) return;
 
@@ -97,16 +122,22 @@ class Slider {
     moveToSlide(index) {
         const slide = this.slides[index];
         if (!slide) return;
+
         this.cancelMomentumAnimation();
 
         this.slides.forEach((s, i) => {
-            s.classList.toggle("slide--active", i === index);
+            const isActive = i === index;
+            s.classList.toggle("slide--active", isActive);
+            s.setAttribute("aria-hidden", !isActive);
+            s.setAttribute("tabindex", isActive ? "0" : "-1");
         });
 
         this.currentIndex = index;
         const targetScrollLeft = this.getTargetScrollLeft(slide, index);
         this.smoothScrollTo(targetScrollLeft, this.config.slideSpeed);
         this.updatePagination();
+
+        this.slides[this.currentIndex].focus();
     }
 
     determineActiveSlideNonSticky() {
@@ -184,8 +215,12 @@ class Slider {
     }
 
     setupNavigation() {
-        this.prevButton.setAttribute("aria-label", "Previous slide");
-        this.nextButton.setAttribute("aria-label", "Next slide");
+        const isGerman = navigator.language.startsWith("de");
+        const prevLabel = isGerman ? "Vorherige Folie" : "Previous slide";
+        const nextLabel = isGerman ? "Nächste Folie" : "Next slide";
+
+        this.prevButton.setAttribute("aria-label", prevLabel);
+        this.nextButton.setAttribute("aria-label", nextLabel);
 
         this.prevButton.addEventListener("click", () => {
             let newIndex = this.currentIndex - 1;
@@ -212,6 +247,9 @@ class Slider {
     }
 
     setupPagination() {
+        const isGerman = navigator.language.startsWith("de");
+        const dotLabelPrefix = isGerman ? "Zur Folie" : "Go to slide";
+
         this.paginationList = document.createElement("ul");
         this.paginationList.setAttribute("role", "tablist");
         this.paginationContainer.innerHTML = "";
@@ -223,15 +261,17 @@ class Slider {
             const dot = document.createElement("button");
             dot.classList.add("slider__dot");
             dot.dataset.index = index;
-            dot.setAttribute("aria-label", `Go to slide ${index + 1}`);
+            dot.setAttribute("aria-label", `${dotLabelPrefix} ${index + 1}`);
             dot.setAttribute("role", "tab");
             dot.setAttribute("aria-controls", this.sliderList.id || "");
+            dot.setAttribute(
+                "aria-selected",
+                index === this.currentIndex ? "true" : "false"
+            );
             if (index === this.currentIndex) {
                 dot.classList.add("active");
-                dot.setAttribute("aria-selected", "true");
-            } else {
-                dot.setAttribute("aria-selected", "false");
             }
+
             li.appendChild(dot);
             this.paginationList.appendChild(li);
             this.paginationDots.push(dot);
