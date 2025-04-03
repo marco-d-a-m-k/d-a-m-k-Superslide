@@ -26,6 +26,11 @@
 -   **`clickToSlide`** \*(Boolean, default: `false`)  
     Moves to Slide when its clicked on when `enabled`.
 
+-   **`lang`** _(String, default: `"auto"`)_  
+    Language used for accessibility labels (`aria-label`, `aria-roledescription`, etc).  
+    Accepts `"de"` (German) for localized labels. `"auto"` uses the `<html lang="">` attribute.  
+    All other values default to English (`"en"`).
+
 ## PHP Setup
 
 ```php

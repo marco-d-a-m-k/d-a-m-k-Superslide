@@ -14,11 +14,17 @@ class Slider {
                 enabled: false,
                 widthTransitionDuration: 300,
             },
-            lang: null,
+            lang: "auto",
             ...config,
         };
-        this.lang = this.config.lang || navigator.language || "en";
+        let lang = this.config.lang;
+        if (!lang || lang === "auto") {
+            lang = (document.documentElement.lang || "en").toLowerCase();
+        }
+        this.lang = lang.toLowerCase();
         this.isGerman = this.lang.startsWith("de");
+        if (!this.isGerman) this.lang = "en";
+
         this.sliderList = sliderElement.querySelector(".slider__list");
         if (!this.sliderList) return;
         this.prevButton = sliderElement.querySelector(".slider--prev");
