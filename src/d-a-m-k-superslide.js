@@ -111,13 +111,17 @@ class Slider {
     }
 
     getTargetScrollLeft(slide, index) {
+        const containerStyle = window.getComputedStyle(this.sliderList);
+        const paddingLeft = parseInt(containerStyle.paddingLeft, 10) || 0;
+
         if (this.config.changeWidth.enabled && this.initialSlideWidth) {
-            return index * (this.initialSlideWidth + this.flexGap);
+            return (
+                index * (this.initialSlideWidth + this.flexGap) - paddingLeft
+            );
         } else {
-            return slide.offsetLeft;
+            return slide.offsetLeft - paddingLeft;
         }
     }
-
     moveToSlide(index) {
         const slide = this.slides[index];
         if (!slide) return;

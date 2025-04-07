@@ -70,8 +70,9 @@ const mySlider = new Slider(sliderElement, {
     swipeThreshold: 50,
     slideSpeed: 300,
     autoActive: true,
+    clickToSlide: true,
     changeWidth: {
-        enabled: true,
+        enabled: false,
         widthTransitionDuration: 500,
     },
 });
