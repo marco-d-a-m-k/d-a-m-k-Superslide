@@ -153,8 +153,7 @@ class Slider {
             const computedStyle = getComputedStyle(this.sliderList);
             const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
 
-            targetScrollLeft =
-                index * (this.initialSlideWidth + this.flexGap) - paddingLeft;
+            targetScrollLeft = index * (this.initialSlideWidth + this.flexGap);
         } else {
             targetScrollLeft = this.getTargetScrollLeft(slide, index);
         }
