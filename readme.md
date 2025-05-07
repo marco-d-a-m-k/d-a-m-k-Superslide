@@ -31,6 +31,10 @@
     Accepts `"de"` (German) for localized labels. `"auto"` uses the `<html lang="">` attribute.  
     All other values default to English (`"en"`).
 
+-   ** Event `slideChange`**  
+    Fires when a new slide becomes active (via click, swipe, or nav buttons).  
+    Dispatched on the root slider DOM element.
+
 ## PHP Setup
 
 ```php
@@ -76,6 +80,12 @@ const mySlider = new Slider(sliderElement, {
         widthTransitionDuration: 500,
         slideWidth: null,
     },
+});
+
+sliderElement.addEventListener("slideChange", (e) => {
+    const { index, slide } = e.detail;
+    console.log("Slide changed to index:", index);
+    console.log("Current slide element:", slide);
 });
 ```
 

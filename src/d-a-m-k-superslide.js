@@ -138,6 +138,15 @@ class Slider {
         });
 
         this.currentIndex = index;
+
+        const event = new CustomEvent("slideChange", {
+            detail: {
+                index,
+                slide: this.slides[index],
+            },
+        });
+        this.sliderElement.dispatchEvent(event);
+
         const targetScrollLeft = this.getTargetScrollLeft(slide, index);
         this.smoothScrollTo(targetScrollLeft, this.config.slideSpeed);
         this.updatePagination();
