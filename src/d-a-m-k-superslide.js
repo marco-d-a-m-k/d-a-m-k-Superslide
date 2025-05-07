@@ -147,8 +147,19 @@ class Slider {
         });
         this.sliderElement.dispatchEvent(event);
 
-        const targetScrollLeft = this.getTargetScrollLeft(slide, index);
-        this.smoothScrollTo(targetScrollLeft, this.config.slideSpeed);
+        if (this.config.changeWidth.enabled) {
+            const ro = new ResizeObserver(() => {
+                const targetScrollLeft = this.getTargetScrollLeft(slide, index);
+                this.smoothScrollTo(targetScrollLeft, this.config.slideSpeed);
+                ro.disconnect();
+            });
+
+            ro.observe(slide);
+        } else {
+            const targetScrollLeft = this.getTargetScrollLeft(slide, index);
+            this.smoothScrollTo(targetScrollLeft, this.config.slideSpeed);
+        }
+
         this.updatePagination();
 
         // Move focus to the active slide
