@@ -2,42 +2,34 @@
 
 ## Usage
 
-### Top-Level Options
-
--   **`isLoop`** _(Boolean, default: `false`)_  
+-   **`isaLoop`** \*(Boolean, default: `false`)  
     Loops back to first or last slide in sticky mode.
 
--   **`freeMode`** _(Boolean, default: `false`)_  
+-   **`freeMode`** \*(Boolean, default: `false`)  
     Allows free scrolling with momentum (no snap).
 
--   **`swipeThreshold`** _(Number, default: `50`)_  
+-   **`swipeThreshold`** \*(Number, default: `50`)  
     Sticky mode: pixels needed to trigger slide change.
 
--   **`slideSpeed`** _(Number, default: `300`)_  
+-   **`slideSpeed`** \*(Number, default: `300`)  
     Duration (ms) for slide transition animations.
 
--   **`autoActive`** _(Boolean, default: `false`)_  
+-   **`autoActive`** \*(Boolean, default: `false`)  
     Auto-detect & mark most visible slide as active.
 
--   **`clickToSlide`** _(Boolean, default: `true`)_  
-    Moves to slide when it's clicked on.
+-   **`changeWidth.enabled`** \*(Boolean, default: `false`)  
+    Treat all slides as if they share the first slide’s width.
+
+-   **`changeWidth.widthTransitionDuration`** \*(Number, default: `300`)  
+    Duration (ms) of the width transition when `enabled`.
+
+-   **`clickToSlide`** \*(Boolean, default: `false`)  
+    Moves to Slide when its clicked on when `enabled`.
 
 -   **`lang`** _(String, default: `"auto"`)_  
     Language used for accessibility labels (`aria-label`, `aria-roledescription`, etc).  
     Accepts `"de"` (German) for localized labels. `"auto"` uses the `<html lang="">` attribute.  
     All other values default to English (`"en"`).
-
-### `changeWidth` Options
-
--   **`changeWidth.enabled`** _(Boolean, default: `false`)_  
-    Enables width-specific behavior.
-
--   **`changeWidth.widthTransitionDuration`** _(Number, default: `300`)_  
-    Duration (ms) of the width transition when `enabled`.
-
--   **`changeWidth.activeSlideWidth`** _(String | null, default: `null`)_  
-    If set (e.g., `"300px"`, `"25ch"`, `"40%"`), applies this width **only to the active slide**.  
-    The layout is recalculated before scrolling to ensure correct alignment. Other slides keep their natural or CSS-defined width.
 
 ## PHP Setup
 
