@@ -115,9 +115,12 @@ class Slider {
         const slideRect = slide.getBoundingClientRect();
         const currentScrollLeft = this.sliderList.scrollLeft;
 
-        // Distance from slide to left edge of sliderList, plus current scroll
+        const computedStyle = window.getComputedStyle(this.sliderList);
+        const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
+
         const delta = slideRect.left - sliderListRect.left;
-        return currentScrollLeft + delta;
+
+        return currentScrollLeft + delta - paddingLeft;
     }
 
     moveToSlide(index) {
