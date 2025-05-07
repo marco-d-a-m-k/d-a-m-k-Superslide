@@ -147,33 +147,18 @@ class Slider {
         });
         this.sliderElement.dispatchEvent(event);
 
-        if (
-            this.config.changeWidth.enabled &&
-            this.config.changeWidth.widthTransitionDuration > 0
-        ) {
-            const duration = this.config.changeWidth.widthTransitionDuration;
+        let targetScrollLeft;
 
-            const ro = new ResizeObserver(() => {
-                ro.disconnect();
-
-                // Wait until width transition is expected to be complete
-                setTimeout(() => {
-                    const targetScrollLeft = this.getTargetScrollLeft(
-                        slide,
-                        index
-                    );
-                    this.smoothScrollTo(
-                        targetScrollLeft,
-                        this.config.slideSpeed
-                    );
-                }, duration);
-            });
-
-            ro.observe(slide);
+        if (this.config.changeWidth.enabled) {
+            const paddingLeft =
+                parseFloat(getComputedStyle(this.sliderList).paddingLeft) || 0;
+            targetScrollLeft =
+                index * (this.initialSlideWidth + this.flexGap) - paddingLeft;
         } else {
-            const targetScrollLeft = this.getTargetScrollLeft(slide, index);
-            this.smoothScrollTo(targetScrollLeft, this.config.slideSpeed);
+            targetScrollLeft = this.getTargetScrollLeft(slide, index);
         }
+
+        this.smoothScrollTo(targetScrollLeft, this.config.slideSpeed);
 
         this.updatePagination();
 
