@@ -111,14 +111,13 @@ class Slider {
     }
 
     getTargetScrollLeft(slide, index) {
-        const sliderRect = this.sliderList.getBoundingClientRect();
+        const sliderListRect = this.sliderList.getBoundingClientRect();
         const slideRect = slide.getBoundingClientRect();
-        const currentScroll = this.sliderList.scrollLeft;
+        const currentScrollLeft = this.sliderList.scrollLeft;
 
-        // Calculate how far the slide is from the left of the container
-        const delta = slideRect.left - sliderRect.left;
-
-        return currentScroll + delta;
+        // Distance from slide to left edge of sliderList, plus current scroll
+        const delta = slideRect.left - sliderListRect.left;
+        return currentScrollLeft + delta;
     }
 
     moveToSlide(index) {
