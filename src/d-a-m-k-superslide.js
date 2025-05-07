@@ -147,11 +147,26 @@ class Slider {
         });
         this.sliderElement.dispatchEvent(event);
 
-        if (this.config.changeWidth.enabled) {
+        if (
+            this.config.changeWidth.enabled &&
+            this.config.changeWidth.widthTransitionDuration > 0
+        ) {
+            const duration = this.config.changeWidth.widthTransitionDuration;
+
             const ro = new ResizeObserver(() => {
-                const targetScrollLeft = this.getTargetScrollLeft(slide, index);
-                this.smoothScrollTo(targetScrollLeft, this.config.slideSpeed);
                 ro.disconnect();
+
+                // Wait until width transition is expected to be complete
+                setTimeout(() => {
+                    const targetScrollLeft = this.getTargetScrollLeft(
+                        slide,
+                        index
+                    );
+                    this.smoothScrollTo(
+                        targetScrollLeft,
+                        this.config.slideSpeed
+                    );
+                }, duration);
             });
 
             ro.observe(slide);
