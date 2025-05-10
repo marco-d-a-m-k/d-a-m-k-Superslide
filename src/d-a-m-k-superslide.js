@@ -82,18 +82,13 @@ class Slider {
         const label = this.isGerman ? "Bildkarussell" : "Image carousel";
 
         this.sliderList.setAttribute("role", "region");
-
-        slide.setAttribute(
-            "aria-roledescription",
-            this.isGerman ? "Slider-Element" : "slide"
-        );
         this.sliderList.setAttribute("aria-label", label);
         this.sliderList.setAttribute("tabindex", "0");
 
         this.slides.forEach((slide, index) => {
             const isActive = index === this.currentIndex;
             const label = this.isGerman
-                ? `Slider-Element ${index + 1} von ${this.slides.length}`
+                ? `Folie ${index + 1} von ${this.slides.length}`
                 : `Slide ${index + 1} of ${this.slides.length}`;
 
             slide.setAttribute("aria-label", label);
@@ -296,6 +291,7 @@ class Slider {
             dot.classList.add("slider__dot");
             dot.dataset.index = index;
             dot.setAttribute("aria-label", `${dotLabelPrefix} ${index + 1}`);
+            dot.setAttribute("role", "tab");
             dot.setAttribute("aria-controls", this.sliderList.id);
             dot.setAttribute(
                 "aria-selected",
