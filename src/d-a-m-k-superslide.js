@@ -81,7 +81,6 @@ class Slider {
     setupAccessibility() {
         const label = this.isGerman ? "Bildkarussell" : "Image carousel";
 
-        this.sliderList.setAttribute("role", "region");
         this.sliderList.setAttribute("aria-label", label);
         this.sliderList.setAttribute("tabindex", "0");
 
