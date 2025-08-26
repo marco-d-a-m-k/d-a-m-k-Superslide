@@ -107,13 +107,13 @@ class Slider {
         if (!slide) return;
 
         this.cancelMomentumAnimation();
-
         this.slides.forEach((s, i) => {
             const isActive = i === index;
             s.classList.toggle("slide--active", isActive);
             s.setAttribute("aria-hidden", isActive ? "false" : "true");
             s.setAttribute("tabindex", isActive ? "0" : "-1");
             s.setAttribute("aria-live", isActive ? "polite" : "off");
+            if (isActive) s.focus();
         });
 
         this.currentIndex = index;
