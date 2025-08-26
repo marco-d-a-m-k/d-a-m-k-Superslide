@@ -38,7 +38,7 @@
 ## PHP Setup
 
 ```php
-<div class="slider" aria-labelledby="XXXXX">
+<div class="slider" role="region" aria-roledescription="carousel" aria-labelledby="XXXXX">
 
     <nav class="slider__control" aria-label="Slider navigation">
         <button class="slider--prev" aria-label="Previous slide">
@@ -49,9 +49,15 @@
         </button>
     </nav>
 
-    <ul class="slider__list">
+    <ul class="slider__list" role="list">
         <?php foreach ($block['slider'] as $index => $item): ?>
-            <li class="slider__litem" data-index="<?= $index ?>">
+            <li
+            class="slider__litem"
+            data-index="<?= $index ?>"
+            role="group"
+            aria-roledescription="Folie"
+            aria-label="<?= $index . " von " . count($block['slider']) ?>"
+            aria-hidden="<?= $index ? 'true' : 'false' ?>">
                 Content
             </li>
         <?php endforeach; ?>

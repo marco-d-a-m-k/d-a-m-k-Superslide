@@ -57,7 +57,6 @@ class Slider {
     }
 
     init() {
-        this.setupAccessibility();
         if (this.prevButton && this.nextButton) {
             this.setupNavigation();
         }
@@ -76,25 +75,6 @@ class Slider {
         liveRegion.id = "sr-slide-status";
         liveRegion.setAttribute("aria-live", "polite");
         this.sliderElement.appendChild(liveRegion);
-    }
-
-    setupAccessibility() {
-        const label = this.isGerman ? "Bildkarussell" : "Image carousel";
-
-        this.sliderList.setAttribute("aria-label", label);
-        this.sliderList.setAttribute("tabindex", "0");
-
-        this.slides.forEach((slide, index) => {
-            const isActive = index === this.currentIndex;
-            const label = this.isGerman
-                ? `Folie ${index + 1} von ${this.slides.length}`
-                : `Slide ${index + 1} of ${this.slides.length}`;
-
-            slide.setAttribute("aria-label", label);
-            slide.setAttribute("aria-current", isActive ? "true" : "false");
-            slide.classList.toggle("slide--active", isActive);
-            slide.setAttribute("tabindex", isActive ? "0" : "-1");
-        });
     }
 
     setupSlideClick() {
@@ -131,46 +111,27 @@ class Slider {
         this.slides.forEach((s, i) => {
             const isActive = i === index;
             s.classList.toggle("slide--active", isActive);
-            s.setAttribute("aria-current", isActive ? "true" : "false");
+            s.setAttribute("aria-hidden", isActive ? "false" : "true");
             s.setAttribute("tabindex", isActive ? "0" : "-1");
+            s.setAttribute("aria-live", isActive ? "polite" : "off");
         });
 
         this.currentIndex = index;
 
         const event = new CustomEvent("slideChange", {
-            detail: {
-                index,
-                slide: this.slides[index],
-            },
+            detail: { index, slide: this.slides[index] },
         });
         this.sliderElement.dispatchEvent(event);
 
-        let targetScrollLeft;
-
-        if (this.config.changeWidth.enabled) {
-            const computedStyle = getComputedStyle(this.sliderList);
-            const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
-
-            targetScrollLeft = index * (this.initialSlideWidth + this.flexGap);
-        } else {
-            targetScrollLeft = this.getTargetScrollLeft(slide, index);
-        }
+        const targetScrollLeft = this.config.changeWidth.enabled
+            ? index * (this.initialSlideWidth + this.flexGap)
+            : this.getTargetScrollLeft(slide, index);
 
         this.smoothScrollTo(targetScrollLeft, this.config.slideSpeed);
-
         this.updatePagination();
 
-        // Move focus to the active slide
+        // Focusing the active slide prompts SRs to read its content
         this.slides[this.currentIndex].focus();
-
-        // Update screen reader announcement
-        const status = this.sliderElement.querySelector("#sr-slide-status");
-        if (status) {
-            const label = this.isGerman
-                ? `Folie ${index + 1} von ${this.slides.length}`
-                : `Slide ${index + 1} of ${this.slides.length}`;
-            status.textContent = label;
-        }
     }
 
     determineActiveSlideNonSticky() {
