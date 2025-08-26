@@ -103,9 +103,8 @@ class Slider {
         this.slides.forEach((s, i) => {
             const isActive = i === index;
             s.classList.toggle("slide--active", isActive);
-            s.setAttribute("aria-hidden", isActive ? "false" : "true");
-            s.setAttribute("tabindex", isActive ? "0" : "-1");
-            if (isActive) s.focus();
+            if (!isActive) s.setAttribute("aria-hidden", "true");
+            else s.removeAttribute("aria-hidden");
         });
 
         this.currentIndex = index;
