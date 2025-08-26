@@ -109,7 +109,6 @@ class Slider {
             } else {
                 s.removeAttribute("aria-hidden");
                 s.setAttribute("tabindex", "0");
-                s.focus();
             }
         });
 
@@ -126,9 +125,6 @@ class Slider {
 
         this.smoothScrollTo(targetScrollLeft, this.config.slideSpeed);
         this.updatePagination();
-
-        // Focusing the active slide prompts SRs to read its content
-        this.slides[this.currentIndex].focus();
     }
 
     determineActiveSlideNonSticky() {
