@@ -68,13 +68,6 @@ class Slider {
         if (this.config.clickToSlide) {
             this.setupSlideClick();
         }
-
-        // Add ARIA live region for announcements
-        const liveRegion = document.createElement("div");
-        liveRegion.setAttribute("visually-hidden", "");
-        liveRegion.id = "sr-slide-status";
-        liveRegion.setAttribute("aria-live", "polite");
-        this.sliderElement.appendChild(liveRegion);
     }
 
     setupSlideClick() {
@@ -112,7 +105,6 @@ class Slider {
             s.classList.toggle("slide--active", isActive);
             s.setAttribute("aria-hidden", isActive ? "false" : "true");
             s.setAttribute("tabindex", isActive ? "0" : "-1");
-            s.setAttribute("aria-live", isActive ? "polite" : "off");
             if (isActive) s.focus();
         });
 
