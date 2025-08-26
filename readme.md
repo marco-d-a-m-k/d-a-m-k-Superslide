@@ -38,7 +38,7 @@
 ## PHP Setup
 
 ```php
-<div class="slider" role="region" aria-roledescription="carousel" aria-labelledby="XXXXX">
+<div class="slider" role="region" aria-roledescription="carousel" aria-label="Slideshow …">
 
     <nav class="slider__control" aria-label="Slider navigation">
         <button class="slider--prev" aria-label="Previous slide">
@@ -49,7 +49,7 @@
         </button>
     </nav>
 
-    <ul class="slider__list" role="list">
+    <ul class="slider__list" role="list" aria-live="polite">
         <?php foreach ($block['slider'] as $index => $item): ?>
             <li
             class="slider__litem"
