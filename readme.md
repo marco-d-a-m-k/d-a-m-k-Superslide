@@ -70,6 +70,8 @@
 
 ## JS Setup
 
+### Single
+
 ```javascript
 import { Slider } from "d-a-m-k-superslide";
 
@@ -95,12 +97,39 @@ sliderElement.addEventListener("slideChange", (e) => {
 });
 ```
 
+### Multi
+
+```javascript
+import { Slider } from "d-a-m-k-superslide";
+
+const sliders = Array.from(document.querySelectorAll(".slider")).map(
+    (element) =>
+        new Slider(element, {
+            isLoop: true,
+            freeMode: false,
+            swipeThreshold: 50,
+            slideSpeed: 300,
+            autoActive: true,
+            clickToSlide: true,
+            changeWidth: {
+                enabled: false,
+                widthTransitionDuration: 500,
+                slideWidth: null,
+            },
+        })
+);
+```
+
 ## CSS Setup
 
 ```css
 .slider {
     display: grid;
     gap: var(--sp-6);
+
+    --mg-inline: var(--sp-4);
+
+    margin-inline: calc(var(--mg-inline) * -1);
 }
 
 .slider__list {
@@ -109,7 +138,10 @@ sliderElement.addEventListener("slideChange", (e) => {
     flex-flow: row nowrap;
     gap: var(--sp-2);
 
+    padding-inline: var(--mg-inline);
+
     overflow-x: scroll;
+    overflow-y: hidden;
 
     &::-webkit-scrollbar {
         display: none;

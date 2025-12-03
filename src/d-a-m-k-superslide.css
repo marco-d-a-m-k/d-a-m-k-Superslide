@@ -1,6 +1,10 @@
 .slider {
     display: grid;
     gap: var(--sp-6);
+
+    --mg-inline: var(--sp-4);
+
+    margin-inline: calc(var(--mg-inline) * -1);
 }
 
 .slider__list {
@@ -8,6 +12,8 @@
     display: flex;
     flex-flow: row nowrap;
     gap: var(--sp-2);
+
+    padding-inline: var(--mg-inline);
 
     overflow-x: scroll;
     overflow-y: hidden;
