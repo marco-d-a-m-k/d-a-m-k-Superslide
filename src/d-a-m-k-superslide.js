@@ -107,10 +107,8 @@ class Slider {
             s.classList.toggle("slide--active", isActive);
 
             if (!isActive) {
-                s.inert = true;
                 s.removeAttribute("aria-hidden");
             } else {
-                s.inert = false;
                 s.removeAttribute("aria-hidden");
                 s.setAttribute("tabindex", "0");
             }
