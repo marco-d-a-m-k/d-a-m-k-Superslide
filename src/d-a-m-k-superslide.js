@@ -68,6 +68,8 @@ class Slider {
         if (this.config.clickToSlide) {
             this.setupSlideClick();
         }
+
+        this.moveToSlide(0);
     }
 
     setupSlideClick() {
@@ -103,10 +105,13 @@ class Slider {
         this.slides.forEach((s, i) => {
             const isActive = i === index;
             s.classList.toggle("slide--active", isActive);
+
             if (!isActive) {
                 s.inert = true;
+                s.removeAttribute("aria-hidden");
             } else {
                 s.inert = false;
+                s.removeAttribute("aria-hidden");
                 s.setAttribute("tabindex", "0");
             }
         });
