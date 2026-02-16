@@ -30,13 +30,13 @@ class Slider {
         if (!this.sliderList) return;
         if (!this.sliderList.id) {
             this.sliderList.id = `slider-list-${Math.floor(
-                Math.random() * 10000
+                Math.random() * 10000,
             )}`;
         }
         this.prevButton = sliderElement.querySelector(".slider--prev");
         this.nextButton = sliderElement.querySelector(".slider--next");
         this.paginationContainer = sliderElement.querySelector(
-            ".slider__pagination"
+            ".slider__pagination",
         );
         this.slides = Array.from(this.sliderList.children).filter((slide) => {
             return window.getComputedStyle(slide).display !== "none";
@@ -96,22 +96,6 @@ class Slider {
     }
 
     moveToSlide(index) {
-        const slide = this.slides[index];
-        if (!slide) return;
-
-        this.cancelMomentumAnimation();
-        this.slides.forEach((s, i) => {
-            const isActive = i === index;
-            s.classList.toggle("slide--active", isActive);
-            if (!isActive) {
-                s.setAttribute("aria-hidden", "true");
-                s.setAttribute("tabindex", "-1");
-            } else {
-                s.removeAttribute("aria-hidden");
-                s.setAttribute("tabindex", "0");
-            }
-        });
-
         this.currentIndex = index;
 
         const event = new CustomEvent("slideChange", {
@@ -248,7 +232,7 @@ class Slider {
             dot.setAttribute("aria-controls", this.sliderList.id);
             dot.setAttribute(
                 "aria-selected",
-                index === this.currentIndex ? "true" : "false"
+                index === this.currentIndex ? "true" : "false",
             );
 
             if (index === this.currentIndex) {
@@ -279,7 +263,7 @@ class Slider {
             dot.classList.toggle("active", index === this.currentIndex);
             dot.setAttribute(
                 "aria-selected",
-                index === this.currentIndex ? "true" : "false"
+                index === this.currentIndex ? "true" : "false",
             );
         });
     }
@@ -299,7 +283,7 @@ class Slider {
                 this.startY = touch.clientY;
                 isHorizontalSwipe = null;
             },
-            { passive: true }
+            { passive: true },
         );
 
         this.sliderList.addEventListener(
@@ -316,7 +300,7 @@ class Slider {
                     e.preventDefault();
                 }
             },
-            { passive: false }
+            { passive: false },
         );
 
         this.currentX = 0;
