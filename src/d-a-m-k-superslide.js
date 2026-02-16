@@ -96,6 +96,21 @@ class Slider {
     }
 
     moveToSlide(index) {
+        const slide = this.slides[index];
+        if (!slide) return;
+
+        this.cancelMomentumAnimation();
+        this.slides.forEach((s, i) => {
+            const isActive = i === index;
+            s.classList.toggle("slide--active", isActive);
+            if (!isActive) {
+                s.inert = true;
+            } else {
+                s.inert = false;
+                s.setAttribute("tabindex", "0");
+            }
+        });
+
         this.currentIndex = index;
 
         const event = new CustomEvent("slideChange", {
