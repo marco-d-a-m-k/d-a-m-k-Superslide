@@ -2,38 +2,56 @@
 
 ## Usage
 
--   **`isaLoop`** \*(Boolean, default: `false`)  
-    Loops back to first or last slide in sticky mode.
+- **`isLoop`** _(Boolean, default: `false`)_  
+  Loops back to first or last slide in sticky mode.
 
--   **`freeMode`** \*(Boolean, default: `false`)  
-    Allows free scrolling with momentum (no snap).
+- **`freeMode`** _(Boolean, default: `false`)_  
+  Allows free scrolling with momentum (no snap).
 
--   **`swipeThreshold`** \*(Number, default: `50`)  
-    Sticky mode: pixels needed to trigger slide change.
+- **`swipeThreshold`** _(Number, default: `50`)_  
+  Sticky mode: pixels needed to trigger slide change.
 
--   **`slideSpeed`** \*(Number, default: `300`)  
-    Duration (ms) for slide transition animations.
+- **`slideSpeed`** _(Number, default: `300`)_  
+  Duration (ms) for slide transition animations.
 
--   **`autoActive`** \*(Boolean, default: `false`)  
-    Auto-detect & mark most visible slide as active.
+- **`autoActive`** _(Boolean, default: `false`)_  
+  Auto-detect & mark most visible slide as active.
 
--   **`changeWidth.enabled`** \*(Boolean, default: `false`)  
-    Treat all slides as if they share the first slide’s width.
+- **`changeWidth.enabled`** _(Boolean, default: `false`)_  
+  Treat all slides as if they share the first slide's width.
 
--   **`changeWidth.widthTransitionDuration`** \*(Number, default: `300`)  
-    Duration (ms) of the width transition when `enabled`.
+- **`changeWidth.widthTransitionDuration`** _(Number, default: `300`)_  
+  Duration (ms) of the width transition when `enabled`.
 
--   **`clickToSlide`** \*(Boolean, default: `false`)  
-    Moves to Slide when its clicked on when `enabled`.
+- **`clickToSlide`** _(Boolean, default: `false`)_  
+  Moves to slide when it is clicked.
 
--   **`lang`** _(String, default: `"auto"`)_  
-    Language used for accessibility labels (`aria-label`, `aria-roledescription`, etc).  
-    Accepts `"de"` (German) for localized labels. `"auto"` uses the `<html lang="">` attribute.  
-    All other values default to English (`"en"`).
+- **`clickZone`** _(Boolean, default: `false`)_  
+  Divides each slide into two halves. Clicking the left half goes to the previous slide, clicking the right half goes to the next slide. Intended for fullscreen slides (100% width). Cannot be used together with `clickToSlide`.
 
--   ** Event `slideChange`**  
-    Fires when a new slide becomes active (via click, swipe, or nav buttons).  
-    Dispatched on the root slider DOM element.
+- **`lang`** _(String, default: `"auto"`)_  
+  Language used for accessibility labels (`aria-label`, `aria-roledescription`, etc).  
+  Accepts `"de"` (German) for localized labels. `"auto"` uses the `<html lang="">` attribute.  
+  All other values default to English (`"en"`).
+
+- **Event `slideChange`**  
+  Fires when a new slide becomes active (via click, swipe, or nav buttons).  
+  Dispatched on the root slider DOM element.
+
+## Methods
+
+- **`goToSlide(index, options?)`**  
+  Programmatically navigate to a slide by its zero-based index.  
+  Out-of-range values are clamped to the first or last slide.
+
+    | Option    | Type    | Default | Description                        |
+    | --------- | ------- | ------- | ---------------------------------- |
+    | `animate` | Boolean | `true`  | Whether to animate the transition. |
+
+```javascript
+mySlider.goToSlide(2); // go to slide 3, animated
+mySlider.goToSlide(0, { animate: false }); // jump to first slide instantly
+```
 
 ## PHP Setup
 
@@ -83,6 +101,7 @@ const mySlider = new Slider(sliderElement, {
     slideSpeed: 300,
     autoActive: true,
     clickToSlide: true,
+    clickZone: false,
     changeWidth: {
         enabled: false,
         widthTransitionDuration: 500,
@@ -95,6 +114,9 @@ sliderElement.addEventListener("slideChange", (e) => {
     console.log("Slide changed to index:", index);
     console.log("Current slide element:", slide);
 });
+
+// Navigate programmatically
+mySlider.goToSlide(2);
 ```
 
 ### Multi
@@ -111,12 +133,13 @@ const sliders = Array.from(document.querySelectorAll(".slider")).map(
             slideSpeed: 300,
             autoActive: true,
             clickToSlide: true,
+            clickZone: false,
             changeWidth: {
                 enabled: false,
                 widthTransitionDuration: 500,
                 slideWidth: null,
             },
-        })
+        }),
 );
 ```
 

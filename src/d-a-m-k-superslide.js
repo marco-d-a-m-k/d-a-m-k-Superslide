@@ -10,6 +10,7 @@ class Slider {
             slideSpeed: 300,
             autoActive: false,
             clickToSlide: true,
+            clickZone: false,
             changeWidth: {
                 enabled: false,
                 widthTransitionDuration: 300,
@@ -63,6 +64,9 @@ class Slider {
         if (this.paginationContainer) {
             this.setupPagination();
         }
+        if (this.config.clickZone) {
+            this.setupClickZone();
+        }
         this.setupSwipe();
         this.setupKeyboardNavigation();
         if (this.config.clickToSlide) {
@@ -70,6 +74,28 @@ class Slider {
         }
 
         this.moveToSlide(0);
+    }
+
+    /**
+     * Navigates to a specific slide by index.
+     * @param {number} index - Zero-based slide index.
+     * @param {object} [options]
+     * @param {boolean} [options.animate=true] - Whether to animate the transition.
+     */
+    goToSlide(index, { animate = true } = {}) {
+        const clampedIndex = Math.max(
+            0,
+            Math.min(this.slides.length - 1, index),
+        );
+
+        if (!animate) {
+            const originalSpeed = this.config.slideSpeed;
+            this.config.slideSpeed = 0;
+            this.moveToSlide(clampedIndex);
+            this.config.slideSpeed = originalSpeed;
+        } else {
+            this.moveToSlide(clampedIndex);
+        }
     }
 
     setupSlideClick() {
@@ -95,6 +121,36 @@ class Slider {
 
         // Adjust scroll so slide's left aligns with inner left edge (after padding)
         return currentScrollLeft + delta - paddingLeft;
+    }
+
+    setupClickZone() {
+        this.slides.forEach((slide) => {
+            slide.addEventListener("click", (e) => {
+                if (this.isDragging) return;
+
+                const rect = slide.getBoundingClientRect();
+                const relativeX = e.clientX - rect.left;
+                const isLeftHalf = relativeX < rect.width / 2;
+
+                if (isLeftHalf) {
+                    const newIndex =
+                        this.config.isLoop && this.currentIndex === 0
+                            ? this.slides.length - 1
+                            : Math.max(0, this.currentIndex - 1);
+                    this.moveToSlide(newIndex);
+                } else {
+                    const newIndex =
+                        this.config.isLoop &&
+                        this.currentIndex === this.slides.length - 1
+                            ? 0
+                            : Math.min(
+                                  this.slides.length - 1,
+                                  this.currentIndex + 1,
+                              );
+                    this.moveToSlide(newIndex);
+                }
+            });
+        });
     }
 
     moveToSlide(index) {
